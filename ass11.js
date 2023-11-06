@@ -85,3 +85,29 @@ db.classes.insertMany({
     title: "Chemistry : Matter and Change", price: 104.30
     }
     })
+
+
+    Queries:
+1. How many classes does “Alice Jones” teach
+2. Find the total no. of students enrolled for each class
+3. Find the total no. of classes conducted by each professor and also the total cost to attend each of the professor’s classes
+Expected Solutions:
+1)
+var mapFunc2 = function(){ emit(this.professor,1);
+}
+var reduceFunc2 = function(professor, count){ return Array.sum(count);
+}
+db.classes.mapReduce( mapFunc2, reduceFunc2,{
+query:{professor: "Alice Jones"}, out: "map_ex_2"
+}
+)
+3) Emit a document consisting both count as 1 & cost to attend each of the professor’s classes to reduce function:
+var mapFunc4 = function(){
+emit(this.professor, { count: 1, cost: this.cost });
+}
+Reduce down to professor and cost:
+var reduceFunc4 = function(professor, values){ var value = { count: 0, cost: 0 };
+for(i = 0; i < values.length; i++){ value.count += values[i].count; value.cost += values[i].cost;
+}
+return value;
+}
